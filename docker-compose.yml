@@ -1,0 +1,45 @@
+services:
+  database:
+    container_name: e-commerce-symfony-ai-postgres
+    image: pgvector/pgvector:pg18
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: ${APP_POSTGRES_DB}
+      POSTGRES_PASSWORD: ${APP_POSTGRES_PASS}
+      POSTGRES_USER: ${APP_POSTGRES_USER}
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"' ]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    restart: always
+  nginx:
+    build: ./docker/nginx
+    container_name: e-commerce-symfony-ai-nginx
+    environment:
+      APP_DIR: ${APP_DIR}
+      APP_HTTP_DOMAIN: ${APP_HTTP_DOMAIN}
+      APP_HTTP_PORT: ${APP_HTTP_PORT}
+    depends_on:
+      - php
+    ports:
+      - "${APP_HTTP_PORT}:${APP_HTTP_PORT}"
+    volumes:
+      - ./docker/nginx/hosts:/etc/nginx/conf.d
+      - ./var/log/nginx:/var/log/nginx
+      - ./:/var/www/app
+    restart: always
+  php:
+    build:
+      context: ./docker/php
+    container_name: e-commerce-symfony-ai-php
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./:/var/www/app
+    restart: always
+
+volumes:
+  postgres-data:

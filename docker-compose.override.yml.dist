@@ -1,0 +1,27 @@
+services:
+  database:
+    ports:
+      - "31401:5432"
+  database-test:
+    container_name: e-commerce-symfony-ai-postgres-test
+    image: pgvector/pgvector:pg18
+    ports:
+      - "31402:5432"
+    tmpfs:
+      - /var/lib/postgresql
+    environment:
+      POSTGRES_DB: ${APP_POSTGRES_DB}_test
+      POSTGRES_PASSWORD: ${APP_POSTGRES_PASS}
+      POSTGRES_USER: ${APP_POSTGRES_USER}
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"' ]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile-local
+    depends_on:
+      database-test:
+        condition: service_healthy

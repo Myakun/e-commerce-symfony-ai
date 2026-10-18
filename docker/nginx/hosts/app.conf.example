@@ -1,0 +1,30 @@
+server {
+    listen ${APP_HTTP_PORT};
+
+    server_name ${APP_HTTP_DOMAIN};
+    root ${APP_DIR}/public;
+
+    #error_log  /var/log/nginx/${APP_HTTP_DOMAIN}.error.log;
+    #access_log /var/log/nginx/${APP_HTTP_DOMAIN}.access.log;
+    access_log off;
+
+    charset UTF-8;
+
+    location / {
+        try_files $uri /index.php$is_args$args;
+    }
+
+    # Symfony front controller: only public/index.php is executable
+    location ~ ^/index\.php(/|$) {
+        fastcgi_pass php:9000;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        internal;
+    }
+
+    location ~ \.php$ {
+        return 404;
+    }
+}

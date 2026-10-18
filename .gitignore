@@ -1,0 +1,6 @@
+.DS_Store
+.idea
+Thumbs.db
+/docker-compose.override.yml
+/var/
+/vendor/

@@ -1,0 +1,34 @@
+PHP_CONTAINER = e-commerce-symfony-ai-php
+EXEC = docker exec -it -w /var/www/app $(PHP_CONTAINER)
+
+composer:
+	$(EXEC) composer $(CMD)
+
+composer-install:
+	$(EXEC) composer install
+
+composer-require:
+	$(EXEC) composer require $(PKG)
+
+composer-require-dev:
+	$(EXEC) composer require --dev $(PKG)
+
+composer-update:
+	$(EXEC) composer update --prefer-dist
+
+console:
+	$(EXEC) php bin/console $(CMD)
+
+docker-down:
+	docker compose down
+
+docker-rebuild:
+	docker compose stop
+	docker compose build
+	docker compose up -d --remove-orphans
+
+docker-up:
+	docker compose up -d
+
+php-shell:
+	$(EXEC) bash
