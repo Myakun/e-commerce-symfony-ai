@@ -1,5 +1,5 @@
 PHP_CONTAINER = e-commerce-symfony-ai-php
-EXEC = docker exec -it -w /var/www/app $(PHP_CONTAINER)
+EXEC = docker exec -it -u www-data -w /var/www/app $(PHP_CONTAINER)
 
 composer:
 	$(EXEC) composer $(CMD)

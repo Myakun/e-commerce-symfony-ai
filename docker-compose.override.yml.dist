@@ -22,6 +22,9 @@ services:
     build:
       context: ./docker/php
       dockerfile: Dockerfile-local
+      args:
+        UID: 1000 # run `id -u` / `id -g` on the host if yours differ
+        GID: 1000
     depends_on:
       database-test:
         condition: service_healthy

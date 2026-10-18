@@ -23,10 +23,19 @@ RUN set -eux \
 	&& pecl install xdebug-3.5.3 \
 	&& docker-php-ext-enable xdebug
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
+# Map www-data to the host user, so files created in the bind mount
+# (by php-fpm, composer, bin/console) belong to the developer
+ARG UID=1000
+ARG GID=1000
+RUN set -eux \
+	&& groupmod -o -g ${GID} www-data \
+	&& usermod -o -u ${UID} -g ${GID} www-data
+
+ENV COMPOSER_HOME=/var/www/.composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-ADD composer/auth.json /root/.composer/auth.json
-RUN git config --global --add safe.directory /var/www/app
+ADD composer/auth.json /var/www/.composer/auth.json
+RUN chown -R www-data:www-data /var/www/.composer
+RUN git config --system --add safe.directory /var/www/app
 
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 ADD php-local.ini /usr/local/etc/php/conf.d/zzz-custom.ini
