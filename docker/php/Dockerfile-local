@@ -23,8 +23,6 @@ RUN set -eux \
 	&& pecl install xdebug-3.5.3 \
 	&& docker-php-ext-enable xdebug
 
-# Map www-data to the host user, so files created in the bind mount
-# (by php-fpm, composer, bin/console) belong to the developer
 ARG UID=1000
 ARG GID=1000
 RUN set -eux \

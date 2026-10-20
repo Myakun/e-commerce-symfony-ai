@@ -1,5 +1,7 @@
 PHP_CONTAINER = e-commerce-symfony-ai-php
+NODE_CONTAINER = e-commerce-symfony-ai-node
 EXEC = docker exec -it -u www-data -w /var/www/app $(PHP_CONTAINER)
+NODE_EXEC = docker exec -it $(NODE_CONTAINER)
 
 composer:
 	$(EXEC) composer $(CMD)
@@ -30,5 +32,11 @@ docker-rebuild:
 docker-up:
 	docker compose up -d
 
+node-shell:
+	$(NODE_EXEC) bash
+
 php-shell:
 	$(EXEC) bash
+
+pnpm:
+	$(NODE_EXEC) pnpm $(CMD)

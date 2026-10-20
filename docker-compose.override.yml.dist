@@ -23,7 +23,7 @@ services:
       context: ./docker/php
       dockerfile: Dockerfile-local
       args:
-        UID: 1000 # run `id -u` / `id -g` on the host if yours differ
+        UID: 1000
         GID: 1000
     depends_on:
       database-test:
